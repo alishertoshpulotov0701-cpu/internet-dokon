@@ -1,5 +1,4 @@
 import re # Matnlarni qolipga tekshirish uchun modul
-import dns.resolver
 import os # Port va muhit o'zgaruvchilarini o'qish uchun yangi modul qo'shildi
 from flask import Flask, render_template_string, request
 from flask_mail import Mail, Message
@@ -41,17 +40,11 @@ def telefon_to_grimi(nomer):
     return bool(re.match(andoza, nomer))
 
 def pochta_to_grimi(email):
-    """ Pochta formati va uning domeni (masalan gmail.com) mavjudligini tekshirish """
+    """ Pochta formati to'g'riligini tekshirish (DNS so'rovlarsiz, xavfsiz variant) """
     andoza = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     if not re.match(andoza, email):
         return False
-    
-    try:
-        domen = email.split('@')[1]
-        dns.resolver.resolve(domen, 'MX')
-        return True
-    except Exception:
-        return False
+    return True  # YANGI: Agar yuqoridagi if'ga tushmasa, pochta to'g'ri deb True qaytaradi
 
 # --- MARSHRUTLAR ---
 
@@ -111,5 +104,6 @@ def mahsulot_sahifasi(m_id):
 
 # TUZATILDI: Render serverida tashqi tarmoqqa ochiladigan va portni dinamik oladigan qism qo'shildi
 if __name__ == '__main__':
+    import os
     port = int(os.environ.get("PORT", 5002))
     app.run(debug=False, host='0.0.0.0', port=port)
