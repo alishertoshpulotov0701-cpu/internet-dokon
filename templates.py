@@ -345,3 +345,4 @@ MAHSULOT_DETAL_HTML = """
 </body>
 </html>
 """
+
